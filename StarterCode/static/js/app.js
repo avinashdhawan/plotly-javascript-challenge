@@ -39,32 +39,20 @@ function drawCharts (ID) {
    // Apply the group bar mode to the layout
    var layout = {
      title: "",
-    //  margin: {
-    //    l: 100,
-    //    r: 100,
-    //    t: 100,
-    //    b: 100
-    //  }
+
    };
  
    // Render the plot to the div tag with id "plot"
    Plotly.newPlot("bar", chartData, layout);
 
-  //  //fill text box
 
-    var mdata = importedData.metadata;
-       Object.entries(mdata).forEach(function([key, value]) {
-       console.log(key, value);
-
-       d3.select("sample-metadata").append(value[key])
-     });
 
 
 // Create a bubble plot using plotly
      var trace2 = {
       x: result.otu_ids,
       y: result.sample_values,
-      text: otuLabels,
+      text: result.otu_labels,
       mode: 'markers',
       marker: {
         size: result.sample_values,
@@ -76,7 +64,10 @@ function drawCharts (ID) {
     var chartData2 = [trace2];
     
     var layout2 = {
-      title: 'Marker Size',
+      title: '',
+      xaxis: {
+      title: {
+          text: 'OTU ID'}},
       showlegend: false,
       
       // height: 600,
@@ -85,7 +76,60 @@ function drawCharts (ID) {
     
     Plotly.newPlot('bubble', chartData2, layout2);
   
+  // DEMOGRAPHIC INFO TEXT BOX
+  var mtadata = importedData.metadata;
 
+  
+var mresult = mtadata.filter(sample => sample.id == ID)[0]
+var sample_metadata = d3.select("#sample-metadata");
+   sample_metadata.html("");
+  
+       Object.entries(mresult).forEach(function([key, value]) {
+       console.log(key, value);
+      
+       var row = sample_metadata.append("p");
+     
+       row.text(`${key}: ${value}`);
+      
+     });
+
+//GAUGE PLOT (BELLY BUTTON WASHING FREQUENCY)
+
+
+var gaugedata = [
+  {
+    domain: { x: [0, 1], y: [0, 1] },
+    value: mresult.wfreq,
+    title: { text: "Belly Button Washing Frequency - Scrubs per Week" },
+    type: "indicator",
+    mode: "gauge+number",
+    
+    gauge: {
+      axis: { range: [null, 9] },
+      steps: [
+        { range: [0, 1], color: "cyan" },
+        { range: [1, 2], color: "royalblue" },
+        { range: [2, 3], color: "cyan" },
+        { range: [3, 4], color: "royalblue" },
+        { range: [4, 5], color: "cyan" },
+        { range: [5, 6], color: "royalblue" },
+        { range: [6, 7], color: "cyan" },
+        { range: [7, 8], color: "royalblue" },
+        { range: [8, 9], color: "cyan" }
+
+      ],
+
+      threshold: {
+        line: { color: "red", width: 4 },
+        thickness: 0.75,
+      
+      }
+    }
+  }
+];
+
+var gaugelayout = { width: 600, height: 450, margin: { t: 0, b: 0 } };
+Plotly.newPlot('gauge', gaugedata, gaugelayout);
     
  });
  
