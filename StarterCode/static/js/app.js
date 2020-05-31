@@ -3,16 +3,14 @@ function drawCharts (ID) {
   filename = 'samples.json'
   d3.json(filename).then((importedData) => {
      var data = importedData.samples;
-    //  var mdata = importedData.metadata;
+    
      
      console.log(data);
-    //  console.log(mdata);
+    
      console.log(ID);
      
  var result = data.filter(sample => sample.id == ID)[0]
-    //  Object.entries(data).forEach(function([key, value]) {
-    //    console.log(key, value);
-    //  });
+
     console.log(result);
      sampleVal = result.sample_values.slice(0, 10).reverse();
      console.log(sampleVal);
@@ -29,9 +27,7 @@ function drawCharts (ID) {
      x: sampleVal,
      y: otuIDs,
      text: otuLabels,
-     // x: data.sample_values,
-     // y: data.otu_ids,
-     // text: data.otu_labels,
+
      name: "",
      type: "bar",
      orientation: "h"
@@ -43,16 +39,54 @@ function drawCharts (ID) {
    // Apply the group bar mode to the layout
    var layout = {
      title: "",
-     margin: {
-       l: 100,
-       r: 100,
-       t: 100,
-       b: 100
-     }
+    //  margin: {
+    //    l: 100,
+    //    r: 100,
+    //    t: 100,
+    //    b: 100
+    //  }
    };
  
    // Render the plot to the div tag with id "plot"
    Plotly.newPlot("bar", chartData, layout);
+
+  //  //fill text box
+
+    var mdata = importedData.metadata;
+       Object.entries(mdata).forEach(function([key, value]) {
+       console.log(key, value);
+
+       d3.select("sample-metadata").append(value[key])
+     });
+
+
+// Create a bubble plot using plotly
+     var trace2 = {
+      x: result.otu_ids,
+      y: result.sample_values,
+      text: otuLabels,
+      mode: 'markers',
+      marker: {
+        size: result.sample_values,
+        color: result.otu_ids
+        
+      }
+    };
+    
+    var chartData2 = [trace2];
+    
+    var layout2 = {
+      title: 'Marker Size',
+      showlegend: false,
+      
+      // height: 600,
+      // width: 600
+    };
+    
+    Plotly.newPlot('bubble', chartData2, layout2);
+  
+
+    
  });
  
 }
